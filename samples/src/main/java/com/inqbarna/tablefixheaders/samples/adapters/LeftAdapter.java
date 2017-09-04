@@ -1,6 +1,8 @@
 package com.inqbarna.tablefixheaders.samples.adapters;
 
 import android.app.Activity;
+import android.content.res.Resources;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,6 +55,9 @@ public class LeftAdapter extends BaseAdapter {
         TextView textView = new TextView(mActivity);
         textView.setText(mdata.get(position));
         textView.setTextSize(22);
+        Resources r = mActivity.getResources();
+        float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 45, r.getDisplayMetrics());
+        textView.setHeight((int) px);
         return textView;
     }
 }

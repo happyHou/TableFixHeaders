@@ -1,10 +1,12 @@
 package com.inqbarna.tablefixheaders.samples.adapters;
 
 import android.app.Activity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.HorizontalScrollView;
 import android.widget.TextView;
 
 import com.inqbarna.tablefixheaders.samples.R;
@@ -26,6 +28,7 @@ import butterknife.ButterKnife;
  */
 
 public class RightAdapter extends BaseAdapter {
+    private static final String TAG = "RightAdapter";
 
     private Activity mActivity;
     private List<List<String>> mdata;
@@ -52,7 +55,7 @@ public class RightAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
         if (convertView != null) {
             holder = (ViewHolder) convertView.getTag();
@@ -67,6 +70,12 @@ public class RightAdapter extends BaseAdapter {
         holder.title3.setText(strings.get(2));
         holder.title4.setText(strings.get(3));
         holder.title5.setText(strings.get(4));
+        holder.title1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.e(TAG, "onClick: "+position );
+            }
+        });
         return convertView;
     }
 
@@ -84,6 +93,9 @@ public class RightAdapter extends BaseAdapter {
         TextView title5;
         @BindView(R.id.title6)
         TextView title6;
+
+        @BindView(R.id.hor)
+        HorizontalScrollView horizontalScrollView;
 
         ViewHolder(View view) {
             ButterKnife.bind(this, view);

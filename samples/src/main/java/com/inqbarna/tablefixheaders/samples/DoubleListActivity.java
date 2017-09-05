@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
 
 import com.inqbarna.tablefixheaders.samples.adapters.RecyclerViewAdapter;
 import com.inqbarna.tablefixheaders.samples.view.ObservableScrollView;
@@ -28,11 +30,11 @@ import butterknife.ButterKnife;
  * https://stackoverflow.com/questions/6509068/synchronize-two-horizontal-scroll-view-android
  * https://stackoverflow.com/questions/7870546/synchronizing-two-horizontal-scroll-views-in-android
  * https://stackoverflow.com/questions/13130389/how-to-get-items-currently-displayed-in-adapterview
+ * http://www.jianshu.com/p/991062d964cf
  */
 
 public class DoubleListActivity extends Activity implements ObservableScrollView.ScrollViewListener {
     private static final String TAG = "DoubleListActivity";
-    private List<String> mLeftData = new ArrayList<>();
     private List<List<String>> mrightData = new ArrayList<>();
     @BindView(R.id.right_list)
     RecyclerView mListView;
@@ -42,7 +44,6 @@ public class DoubleListActivity extends Activity implements ObservableScrollView
 
     private int visibleCount;
     private LinearLayoutManager layoutManager;
-    private boolean listViewOnLayoutSuccess;
 
 
     {
@@ -74,6 +75,9 @@ public class DoubleListActivity extends Activity implements ObservableScrollView
         layoutManager = (LinearLayoutManager) mListView.getLayoutManager();
         adapter=new RecyclerViewAdapter(this,mrightData,this);
         mListView.setAdapter(adapter);
+        setHeaderView(mListView);
+        setFooterView(mListView);
+
     }
 
     private void synScrollListView() {
@@ -82,10 +86,7 @@ public class DoubleListActivity extends Activity implements ObservableScrollView
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                if (!listViewOnLayoutSuccess) {
                     visibleCount=layoutManager.findLastVisibleItemPosition()-layoutManager.findFirstVisibleItemPosition();
-                }
-                listViewOnLayoutSuccess=true;
             }
         });
     }
@@ -93,7 +94,9 @@ public class DoubleListActivity extends Activity implements ObservableScrollView
     private void syncHorizontalScrollView(){
         for (int count = visibleCount; count >=0; count--) {
             ObservableScrollView viewById = (ObservableScrollView) mListView.getChildAt(count).findViewById(R.id.hor);
-            viewById.scrollTo(x,y);
+            if (viewById!=null) {
+                viewById.scrollTo(x,y);
+            }
         }
 
     }
@@ -103,7 +106,18 @@ public class DoubleListActivity extends Activity implements ObservableScrollView
     public void onScrollChanged(ObservableScrollView scrollView, int x, int y, int oldx, int oldy) {
         this.x = x;
         this.y = y;
+
         syncHorizontalScrollView();
 
     }
+    private void setHeaderView(RecyclerView view){
+        View header = LayoutInflater.from(this).inflate(R.layout.header_layout, view, false);
+         adapter.setHeaderView(header);
+    }
+
+    private void setFooterView(RecyclerView view){
+        View footer = LayoutInflater.from(this).inflate(R.layout.footer_layout, view, false);
+        adapter.setFooterView(footer);
+    }
+
 }

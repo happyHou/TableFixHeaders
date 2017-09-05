@@ -6,15 +6,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.HorizontalScrollView;
 import android.widget.TextView;
 
 import com.inqbarna.tablefixheaders.samples.R;
+import com.inqbarna.tablefixheaders.samples.view.ObservableScrollView;
 
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static com.inqbarna.tablefixheaders.samples.R.id.leftItem;
 
 /**
  * ===============================
@@ -33,10 +35,12 @@ public class RightAdapter extends BaseAdapter {
     private Activity mActivity;
     private List<List<String>> mdata;
     private final LayoutInflater inflater;
+    private ObservableScrollView.ScrollViewListener mListener;
 
-    public RightAdapter(Activity mActivity, List<List<String>> mdata) {
+    public RightAdapter(Activity mActivity, List<List<String>> mdata,ObservableScrollView.ScrollViewListener listener) {
         this.mdata = mdata;
         inflater = LayoutInflater.from(mActivity);
+        mListener=listener;
     }
 
     @Override
@@ -70,6 +74,9 @@ public class RightAdapter extends BaseAdapter {
         holder.title3.setText(strings.get(2));
         holder.title4.setText(strings.get(3));
         holder.title5.setText(strings.get(4));
+        holder.leftItem.setText(strings.get(5));
+        holder.horizontalScrollView.setScrollViewListener(mListener);
+
         holder.title1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -93,9 +100,11 @@ public class RightAdapter extends BaseAdapter {
         TextView title5;
         @BindView(R.id.title6)
         TextView title6;
-
         @BindView(R.id.hor)
-        HorizontalScrollView horizontalScrollView;
+        ObservableScrollView horizontalScrollView;
+
+        @BindView(R.id.leftItem)
+        TextView leftItem;
 
         ViewHolder(View view) {
             ButterKnife.bind(this, view);

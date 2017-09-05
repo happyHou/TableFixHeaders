@@ -2,11 +2,10 @@ package com.inqbarna.tablefixheaders.samples;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.AbsListView;
-import android.widget.ListView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 
-import com.inqbarna.tablefixheaders.samples.adapters.RightAdapter;
+import com.inqbarna.tablefixheaders.samples.adapters.RecyclerViewAdapter;
 import com.inqbarna.tablefixheaders.samples.view.ObservableScrollView;
 
 import java.util.ArrayList;
@@ -33,15 +32,17 @@ import butterknife.ButterKnife;
 
 public class DoubleListActivity extends Activity implements ObservableScrollView.ScrollViewListener {
     private static final String TAG = "DoubleListActivity";
-    private RightAdapter rightAdapter;
     private List<String> mLeftData = new ArrayList<>();
     private List<List<String>> mrightData = new ArrayList<>();
     @BindView(R.id.right_list)
-    ListView rightList;
+    RecyclerView mListView;
+    private RecyclerViewAdapter adapter;
     private int x;
     private int y;
 
     private int visibleCount;
+    private LinearLayoutManager layoutManager;
+    private boolean listViewOnLayoutSuccess;
 
 
     {
@@ -69,32 +70,29 @@ public class DoubleListActivity extends Activity implements ObservableScrollView
     }
 
     private void initListView() {
-        rightAdapter = new RightAdapter(this, mrightData, this);
-        rightList.setAdapter(rightAdapter);
+        mListView.setLayoutManager(new LinearLayoutManager(this));//这里
+        layoutManager = (LinearLayoutManager) mListView.getLayoutManager();
+        adapter=new RecyclerViewAdapter(this,mrightData,this);
+        mListView.setAdapter(adapter);
     }
 
     private void synScrollListView() {
-
-
-        rightList.setOnScrollListener(new AbsListView.OnScrollListener() {
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                int firstVisibleRow = view.getFirstVisiblePosition();
-                int lastVisibleRow = view.getLastVisiblePosition();
-                visibleCount = lastVisibleRow - firstVisibleRow;
-                syncHorizontalScrollView();
-            }
+        mListView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
             @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (!listViewOnLayoutSuccess) {
+                    visibleCount=layoutManager.findLastVisibleItemPosition()-layoutManager.findFirstVisibleItemPosition();
+                }
+                listViewOnLayoutSuccess=true;
             }
         });
-
     }
 
     private void syncHorizontalScrollView(){
         for (int count = visibleCount; count >=0; count--) {
-            ObservableScrollView viewById = (ObservableScrollView) rightList.getChildAt(count).findViewById(R.id.hor);
+            ObservableScrollView viewById = (ObservableScrollView) mListView.getChildAt(count).findViewById(R.id.hor);
             viewById.scrollTo(x,y);
         }
 

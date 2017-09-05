@@ -15,6 +15,11 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.bingoogolapple.refreshlayout.BGAMoocStyleRefreshViewHolder;
+import cn.bingoogolapple.refreshlayout.BGANormalRefreshViewHolder;
+import cn.bingoogolapple.refreshlayout.BGARefreshLayout;
+import cn.bingoogolapple.refreshlayout.BGARefreshViewHolder;
+import cn.bingoogolapple.refreshlayout.BGAStickyNavLayout;
 
 
 /**
@@ -33,11 +38,14 @@ import butterknife.ButterKnife;
  * http://www.jianshu.com/p/991062d964cf
  */
 
-public class DoubleListActivity extends Activity implements ObservableScrollView.ScrollViewListener {
+public class DoubleListActivity extends Activity implements ObservableScrollView.ScrollViewListener, BGARefreshLayout.BGARefreshLayoutDelegate {
     private static final String TAG = "DoubleListActivity";
     private List<List<String>> mrightData = new ArrayList<>();
     @BindView(R.id.right_list)
     RecyclerView mListView;
+    @BindView(R.id.rl_modulename_refresh)
+    BGARefreshLayout bgaRefreshLayout;
+
     private RecyclerViewAdapter adapter;
     private int x;
     private int y;
@@ -67,7 +75,17 @@ public class DoubleListActivity extends Activity implements ObservableScrollView
         setContentView(R.layout.activity_double_list);
         ButterKnife.bind(this);
         this.initListView();
+        initRefreshLayout();
         this.synScrollListView();
+    }
+
+    private void initRefreshLayout() {
+        bgaRefreshLayout.setDelegate(this);
+
+
+        bgaRefreshLayout.setRefreshViewHolder(new BGANormalRefreshViewHolder(this,true));
+
+
     }
 
     private void initListView() {
@@ -120,4 +138,13 @@ public class DoubleListActivity extends Activity implements ObservableScrollView
         adapter.setFooterView(footer);
     }
 
+    @Override
+    public void onBGARefreshLayoutBeginRefreshing(BGARefreshLayout refreshLayout) {
+
+    }
+
+    @Override
+    public boolean onBGARefreshLayoutBeginLoadingMore(BGARefreshLayout refreshLayout) {
+        return false;
+    }
 }
